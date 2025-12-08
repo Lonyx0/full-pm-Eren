@@ -1,33 +1,44 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout/Layout';
-import Dashboard from './pages/Dashboard';
-import Projects from './pages/Projects';
-import ProjectDetails from './pages/ProjectDetails';
-import Tasks from './pages/Tasks';
-import Calendar from './pages/Calendar';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import DashboardLayout from './components/layout/DashboardLayout';
+
+// Pages
+import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AuthCallback from './pages/AuthCallback';
+import Dashboard from './pages/Dashboard';
+import Projects from './pages/Projects';
+import CreateProject from './pages/CreateProject';
+import ProjectDetail from './pages/ProjectDetail';
 import Profile from './pages/Profile';
-import Reports from './pages/Reports';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="projects" element={<Projects />} />
-          <Route path="projects/:id" element={<ProjectDetails />} />
-          <Route path="tasks" element={<Tasks />} />
-          <Route path="calendar" element={<Calendar />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="*" element={<div>Page not found</div>} />
-        </Route>
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+
+          {/* Protected Routes */}
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route index element={<Dashboard />} />
+            <Route path="projects" element={<Projects />} />
+            <Route path="projects/new" element={<CreateProject />} />
+            <Route path="projects/:id" element={<ProjectDetail />} />
+            <Route path="profile" element={<Profile />} />
+          </Route>
+
+          {/* Catch all - redirect to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

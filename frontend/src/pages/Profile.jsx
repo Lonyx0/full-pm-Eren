@@ -1,46 +1,42 @@
-import React from 'react';
-import './Profile.css';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { User } from 'lucide-react';
 
 const Profile = () => {
-    return (
-        <div className="profile-page">
-            <div className="profile-header">
-                <div className="profile-cover"></div>
-                <div className="profile-info">
-                    <div className="profile-avatar">JD</div>
-                    <div className="profile-details">
-                        <h1>John Doe</h1>
-                        <p>Senior Developer</p>
-                    </div>
-                    <button className="btn-secondary">Edit Profile</button>
-                </div>
-            </div>
+  return (
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Profil</h1>
+        <p className="text-muted-foreground">
+          Hesap bilgilerinizi görüntüleyin
+        </p>
+      </div>
 
-            <div className="profile-content">
-                <div className="profile-section">
-                    <h3>Personal Information</h3>
-                    <div className="info-grid">
-                        <div className="info-item">
-                            <label>Full Name</label>
-                            <p>John Doe</p>
-                        </div>
-                        <div className="info-item">
-                            <label>Email</label>
-                            <p>john.doe@example.com</p>
-                        </div>
-                        <div className="info-item">
-                            <label>Phone</label>
-                            <p>+1 234 567 890</p>
-                        </div>
-                        <div className="info-item">
-                            <label>Location</label>
-                            <p>New York, USA</p>
-                        </div>
-                    </div>
-                </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            Kullanıcı Bilgileri
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Kullanıcı Adı</p>
+              <p className="text-lg">-</p>
             </div>
-        </div>
-    );
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Email</p>
+              <p className="text-lg">-</p>
+            </div>
+            <div className="pt-4">
+              <Button variant="outline">Profili Düzenle</Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 };
 
 export default Profile;
