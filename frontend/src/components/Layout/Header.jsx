@@ -12,10 +12,10 @@ const Header = ({ onMenuClick }) => {
     <header className="fixed top-0 left-0 right-0 h-16 glass border-b border-neutral-200/50 z-50 shadow-soft">
       <div className="flex items-center justify-between h-full px-6">
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={onMenuClick} 
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onMenuClick}
             className="lg:hidden hover:bg-gray-50 hover:text-gray-900 transition-colors"
           >
             <Menu className="h-6 w-6" />
@@ -33,15 +33,6 @@ const Header = ({ onMenuClick }) => {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Notifications */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="relative hover:bg-gray-50 hover:text-gray-900 transition-colors"
-          >
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full animate-pulse"></span>
-          </Button>
 
           {/* User Dropdown */}
           <DropdownMenu>
@@ -66,12 +57,6 @@ const Header = ({ onMenuClick }) => {
                 <Link to="/dashboard/profile" className="flex items-center">
                   <User className="mr-2 h-4 w-4" />
                   Profil
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="cursor-pointer">
-                <Link to="/dashboard/profile" className="flex items-center">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Ayarlar
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

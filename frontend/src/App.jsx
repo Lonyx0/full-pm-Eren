@@ -13,6 +13,8 @@ import Projects from './pages/Projects';
 import CreateProject from './pages/CreateProject';
 import ProjectDetail from './pages/ProjectDetail';
 import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
+import MyTasks from './pages/MyTasks';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
             <Route path="projects/new" element={<CreateProject />} />
             <Route path="projects/:id" element={<ProjectDetail />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="profile/edit" element={<EditProfile />} />
+            <Route path="tasks" element={<MyTasks />} />
           </Route>
 
           {/* Catch all - redirect to home */}

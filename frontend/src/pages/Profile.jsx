@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Profile = () => {
   return (
@@ -30,7 +31,9 @@ const Profile = () => {
               <p className="text-lg">-</p>
             </div>
             <div className="pt-4">
-              <Button variant="outline">Profili Düzenle</Button>
+              <Button asChild variant="outline">
+                <Link to="/dashboard/profile/edit">Profili Düzenle</Link>
+              </Button>
             </div>
           </div>
         </CardContent>

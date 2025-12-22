@@ -36,27 +36,27 @@ const Dashboard = () => {
   };
 
   const statCards = [
-    { 
-      title: 'Toplam Proje', 
-      value: stats.totalProjects, 
-      icon: FolderKanban, 
-      gradient: 'from-gray-800 to-gray-900', 
+    {
+      title: 'Toplam Proje',
+      value: stats.totalProjects,
+      icon: FolderKanban,
+      gradient: 'from-gray-800 to-gray-900',
       bgLight: 'bg-gray-100',
       iconBg: 'bg-gradient-to-br from-gray-800 to-gray-900'
     },
-    { 
-      title: 'Aktif Görevler', 
-      value: stats.activeTasks, 
-      icon: Clock, 
-      gradient: 'from-gray-600 to-gray-700', 
+    {
+      title: 'Aktif Görevler',
+      value: stats.activeTasks,
+      icon: Clock,
+      gradient: 'from-gray-600 to-gray-700',
       bgLight: 'bg-gray-100',
       iconBg: 'bg-gradient-to-br from-gray-600 to-gray-700'
     },
-    { 
-      title: 'Tamamlanan', 
-      value: stats.completedTasks, 
-      icon: CheckCircle2, 
-      gradient: 'from-gray-500 to-gray-600', 
+    {
+      title: 'Tamamlanan',
+      value: stats.completedTasks,
+      icon: CheckCircle2,
+      gradient: 'from-gray-500 to-gray-600',
       bgLight: 'bg-gray-100',
       iconBg: 'bg-gradient-to-br from-gray-500 to-gray-600'
     },
@@ -98,8 +98,8 @@ const Dashboard = () => {
       {/* Stats Cards */}
       <div className="grid gap-6 md:grid-cols-3">
         {statCards.map((stat, index) => (
-          <Card 
-            key={stat.title} 
+          <Card
+            key={stat.title}
             className={`${stat.bgLight} border-2 hover:border-gray-400 shadow-soft hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 animate-slide-up`}
             style={{ animationDelay: `${index * 100}ms` }}
           >
@@ -131,9 +131,9 @@ const Dashboard = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Button 
-              asChild 
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <Button
+              asChild
               className="bg-gradient-to-r from-gray-900 to-gray-800 hover:shadow-lg transition-all h-12"
             >
               <Link to="/dashboard/projects/new">
@@ -148,17 +148,12 @@ const Dashboard = () => {
               </Link>
             </Button>
             <Button variant="outline" asChild className="border-2 h-12">
-              <Link to="/dashboard/projects">
+              <Link to="/dashboard/tasks">
                 <Target className="mr-2 h-4 w-4" />
                 Görevlerim
               </Link>
             </Button>
-            <Button variant="outline" asChild className="border-2 h-12">
-              <Link to="/dashboard/profile">
-                <Clock className="mr-2 h-4 w-4" />
-                Aktivite
-              </Link>
-            </Button>
+
           </div>
         </CardContent>
       </Card>
@@ -191,8 +186,8 @@ const Dashboard = () => {
               <p className="text-neutral-600 mb-6 max-w-md mx-auto">
                 İlk projenizi oluşturarak ProManage'i kullanmaya başlayın
               </p>
-              <Button 
-                asChild 
+              <Button
+                asChild
                 className="bg-gradient-to-r from-gray-900 to-gray-800 hover:shadow-lg transition-all"
               >
                 <Link to="/dashboard/projects/new">
