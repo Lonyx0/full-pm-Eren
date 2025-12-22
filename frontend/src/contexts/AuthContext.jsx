@@ -40,13 +40,20 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserData = async (token) => {
     try {
-      // You might want to add a /me endpoint to get user data
-      const decoded = jwtDecode(token);
-      setUser({ id: decoded.id });
+      const response = await api.get('/auth/me');
+      setUser(response.data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching user data:', error);
-      logout();
+      // Don't logout - just decode the token for basic user info
+      try {
+        const decoded = jwtDecode(token);
+        setUser({ id: decoded.id });
+        setLoading(false);
+      } catch (decodeError) {
+        console.error('Token decode error:', decodeError);
+        logout();
+      }
     }
   };
 
@@ -74,8 +81,7 @@ export const AuthProvider = ({ children }) => {
       });
       const { token } = response.data;
       localStorage.setItem('token', token);
-      const decoded = jwtDecode(token);
-      setUser({ id: decoded.id });
+      await fetchUserData(token);
       return { success: true };
     } catch (error) {
       return {
@@ -94,8 +100,7 @@ export const AuthProvider = ({ children }) => {
       });
       const { token } = response.data;
       localStorage.setItem('token', token);
-      const decoded = jwtDecode(token);
-      setUser({ id: decoded.id });
+      await fetchUserData(token);
       return { success: true };
     } catch (error) {
       return {

@@ -48,11 +48,42 @@ router.post('/:id/add-member', auth, projectRoleCheck("admin"), async (req, res)
     }
 });
 
-// Get projects for the authenticated user
+// Get projects for the authenticated user - MUST BE BEFORE /:id
 router.get('/my-projects', auth, async (req, res) => {
     try {
         const projects = await Project.find({ "members.user": req.user.id }).populate("members.user", "username email");
         res.json(projects);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Get single project by ID (only members)
+router.get('/:id', auth, projectRoleCheck(), async (req, res) => {
+    try {
+        const project = req.project; // Already fetched by middleware
+        await project.populate('members.user', 'username email');
+        res.json(project);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+
+// Update project (only Admins)
+router.patch('/:id', auth, projectRoleCheck("admin"), async (req, res) => {
+    try {
+        const { name, description } = req.body;
+        const project = req.project;
+
+        if (name) project.name = name;
+        if (description !== undefined) project.description = description;
+
+        await project.save();
+        await project.populate('members.user', 'username email');
+        res.json(project);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });

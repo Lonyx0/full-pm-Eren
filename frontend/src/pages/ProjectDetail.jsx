@@ -4,9 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { Textarea } from '../components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { ArrowLeft, Users, Plus, CheckCircle2, Clock, Circle, UserPlus, ListTodo } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { ArrowLeft, Users, Plus, CheckCircle2, Clock, Circle, UserPlus, ListTodo, Edit2, Save, X, XCircle } from 'lucide-react';
 import api from '../api/axios';
+import TaskDetailDialog from '../components/TaskDetailDialog';
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -17,6 +20,15 @@ const ProjectDetail = () => {
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const [taskForm, setTaskForm] = useState({ title: '', description: '', assignedTo: '' });
+  
+  // Edit mode states
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editForm, setEditForm] = useState({ name: '', description: '' });
+  const [saving, setSaving] = useState(false);
+  
+  // Task detail dialog
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [taskDetailOpen, setTaskDetailOpen] = useState(false);
 
   useEffect(() => {
     fetchProjectDetails();
@@ -25,9 +37,8 @@ const ProjectDetail = () => {
 
   const fetchProjectDetails = async () => {
     try {
-      const response = await api.get(`/projects/my-projects`);
-      const foundProject = response.data.find(p => p._id === id);
-      setProject(foundProject);
+      const response = await api.get(`/projects/${id}`);
+      setProject(response.data);
     } catch (error) {
       console.error('Error fetching project:', error);
     } finally {
@@ -71,24 +82,62 @@ const ProjectDetail = () => {
     }
   };
 
+  const handleEditClick = () => {
+    setEditForm({ name: project.name, description: project.description || '' });
+    setIsEditMode(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+    setEditForm({ name: '', description: '' });
+  };
+
+  const handleSaveEdit = async () => {
+    setSaving(true);
+    try {
+      const response = await api.patch(`/projects/${id}`, editForm);
+      setProject(response.data);
+      setIsEditMode(false);
+    } catch (error) {
+      alert(error.response?.data?.message || 'Proje güncellenemedi');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+    setTaskDetailOpen(true);
+  };
+
+  const handleTaskUpdate = (updatedTask) => {
+    setTasks(tasks.map(t => t._id === updatedTask._id ? updatedTask : t));
+  };
+
   const getTasksByStatus = (status) => {
     return tasks.filter(task => task.status === status);
   };
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'done': return <CheckCircle2 className="h-5 w-5 text-emerald-600" />;
+      case 'approved': return <CheckCircle2 className="h-5 w-5 text-emerald-600" />;
+      case 'completed': return <CheckCircle2 className="h-5 w-5 text-blue-600" />;
       case 'in-progress': return <Clock className="h-5 w-5 text-amber-600" />;
+      case 'rejected': return <XCircle className="h-5 w-5 text-red-600" />;
       default: return <Circle className="h-5 w-5 text-neutral-400" />;
     }
   };
 
   const getStatusConfig = (status) => {
     switch (status) {
-      case 'done': 
-        return { bg: 'bg-emerald-50/50', border: 'border-emerald-200', title: 'Tamamlandı', color: 'text-emerald-700' };
+      case 'approved': 
+        return { bg: 'bg-emerald-50/50', border: 'border-emerald-200', title: 'Onaylandı', color: 'text-emerald-700' };
+      case 'completed': 
+        return { bg: 'bg-blue-50/50', border: 'border-blue-200', title: 'Tamamlandı', color: 'text-blue-700' };
       case 'in-progress': 
         return { bg: 'bg-amber-50/50', border: 'border-amber-200', title: 'Devam Ediyor', color: 'text-amber-700' };
+      case 'rejected':
+        return { bg: 'bg-red-50/50', border: 'border-red-200', title: 'Reddedildi', color: 'text-red-700' };
       default: 
         return { bg: 'bg-neutral-50/50', border: 'border-neutral-200', title: 'Yapılacak', color: 'text-neutral-700' };
     }
@@ -118,22 +167,87 @@ const ProjectDetail = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex items-start justify-between flex-wrap gap-4">
-        <div className="flex items-start gap-4">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            asChild 
-            className="mt-1 border-2 hover:border-gray-500 hover:bg-gray-50"
-          >
-            <Link to="/dashboard/projects">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-1">{project.name}</h1>
-            <p className="text-neutral-600 text-lg">{project.description}</p>
+      <div className="space-y-4">
+        <div className="flex items-start justify-between flex-wrap gap-4">
+          <div className="flex items-start gap-4 flex-1">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              asChild 
+              className="mt-1 border-2 hover:border-gray-500 hover:bg-gray-50"
+            >
+              <Link to="/dashboard/projects">
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+            </Button>
+            
+            <div className="flex-1">
+              {!isEditMode ? (
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-display font-bold mb-1">{project.name}</h1>
+                  <p className="text-neutral-600 text-lg">{project.description || 'Açıklama eklenmemiş'}</p>
+                </div>
+              ) : (
+                <div className="space-y-3 max-w-2xl">
+                  <div>
+                    <Label htmlFor="edit-name" className="text-sm font-medium mb-1.5 block">Proje Adı</Label>
+                    <Input
+                      id="edit-name"
+                      value={editForm.name}
+                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                      className="text-2xl font-bold h-12"
+                      disabled={saving}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-description" className="text-sm font-medium mb-1.5 block">Açıklama</Label>
+                    <Textarea
+                      id="edit-description"
+                      value={editForm.description}
+                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                      rows={3}
+                      disabled={saving}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
+          
+          {isAdmin && (
+            <div className="flex gap-2">
+              {!isEditMode ? (
+                <Button
+                  variant="outline"
+                  onClick={handleEditClick}
+                  className="gap-2"
+                >
+                  <Edit2 className="h-4 w-4" />
+                  Düzenle
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={handleCancelEdit}
+                    disabled={saving}
+                    className="gap-2"
+                  >
+                    <X className="h-4 w-4" />
+                    İptal
+                  </Button>
+                  <Button
+                    onClick={handleSaveEdit}
+                    disabled={saving || !editForm.name.trim()}
+                    className="gap-2 bg-gradient-to-r from-gray-900 to-gray-800"
+                  >
+                    <Save className="h-4 w-4" />
+                    {saving ? 'Kaydediliyor...' : 'Kaydet'}
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -236,23 +350,27 @@ const ProjectDetail = () => {
                       </div>
                       <div>
                         <Label htmlFor="description">Açıklama</Label>
-                        <textarea
+                        <Textarea
                           id="description"
                           value={taskForm.description}
                           onChange={(e) => setTaskForm({...taskForm, description: e.target.value})}
                           rows={3}
-                          className="flex w-full rounded-md border-2 border-input bg-transparent px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="assignedTo">Atanan Kişi (ID)</Label>
-                        <Input
-                          id="assignedTo"
-                          value={taskForm.assignedTo}
-                          onChange={(e) => setTaskForm({...taskForm, assignedTo: e.target.value})}
-                          placeholder="User ID"
-                          required
-                        />
+                        <Label htmlFor="assignedTo">Atanan Kişi</Label>
+                        <Select value={taskForm.assignedTo} onValueChange={(value) => setTaskForm({...taskForm, assignedTo: value})} required>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Bir üye seçin" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {project?.members?.map((member) => (
+                              <SelectItem key={member.user._id} value={member.user._id}>
+                                {member.user.username} ({member.user.email})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <Button type="submit" className="w-full bg-gradient-to-r from-gray-900 to-gray-800">
                         Oluştur
@@ -265,7 +383,7 @@ const ProjectDetail = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
-              {['todo', 'in-progress', 'done'].map(status => {
+              {['todo', 'in-progress', 'completed'].map(status => {
                 const config = getStatusConfig(status);
                 const statusTasks = getTasksByStatus(status);
                 
@@ -287,6 +405,7 @@ const ProjectDetail = () => {
                         <div 
                           key={task._id} 
                           className="p-4 rounded-lg border-2 bg-white hover:border-gray-400 hover:shadow-md transition-all group cursor-pointer"
+                          onClick={() => handleTaskClick(task)}
                         >
                           <div className="flex items-start gap-3">
                             {getStatusIcon(task.status)}
@@ -316,6 +435,19 @@ const ProjectDetail = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Task Detail Dialog */}
+      <TaskDetailDialog
+        task={selectedTask}
+        isOpen={taskDetailOpen}
+        onClose={() => {
+          setTaskDetailOpen(false);
+          setSelectedTask(null);
+        }}
+        onUpdate={handleTaskUpdate}
+        projectMembers={project?.members || []}
+        isAdmin={isAdmin}
+      />
     </div>
   );
 };
