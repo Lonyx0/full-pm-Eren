@@ -17,43 +17,45 @@ const TaskDetailDialog = ({ task, isOpen, onClose, onUpdate, projectMembers, isA
 
   if (!task) return null;
 
-  const isAssignedToMe = task.assignedTo?._id === user?.id || task.assignedTo === user?.id;
+  const currentUserId = user?._id || user?.id;
+  const taskAssignedUserId = task.assignedTo?._id || task.assignedTo;
+  const isAssignedToMe = currentUserId && taskAssignedUserId && (currentUserId.toString() === taskAssignedUserId.toString());
 
   const getStatusConfig = (status) => {
     switch (status) {
       case 'todo':
-        return { 
-          label: 'Yapılacak', 
+        return {
+          label: 'Yapılacak',
           color: 'bg-gray-100 text-gray-700 border-gray-300',
           icon: <Circle className="h-4 w-4" />
         };
       case 'in-progress':
-        return { 
-          label: 'Devam Ediyor', 
+        return {
+          label: 'Devam Ediyor',
           color: 'bg-amber-100 text-amber-700 border-amber-300',
           icon: <Clock className="h-4 w-4" />
         };
       case 'completed':
-        return { 
-          label: 'Tamamlandı', 
+        return {
+          label: 'Tamamlandı',
           color: 'bg-blue-100 text-blue-700 border-blue-300',
           icon: <CheckCircle2 className="h-4 w-4" />
         };
       case 'approved':
-        return { 
-          label: 'Onaylandı', 
+        return {
+          label: 'Onaylandı',
           color: 'bg-emerald-100 text-emerald-700 border-emerald-300',
           icon: <CheckCircle2 className="h-4 w-4" />
         };
       case 'rejected':
-        return { 
-          label: 'Reddedildi', 
+        return {
+          label: 'Reddedildi',
           color: 'bg-red-100 text-red-700 border-red-300',
           icon: <XCircle className="h-4 w-4" />
         };
       default:
-        return { 
-          label: status, 
+        return {
+          label: status,
           color: 'bg-gray-100 text-gray-700',
           icon: <Circle className="h-4 w-4" />
         };
@@ -184,11 +186,10 @@ const TaskDetailDialog = ({ task, isOpen, onClose, onUpdate, projectMembers, isA
 
             {/* Approval/Rejection Notes */}
             {task.approvalNotes && (
-              <div className={`p-4 rounded-lg border-2 ${
-                task.status === 'approved' 
-                  ? 'bg-emerald-50 border-emerald-200' 
+              <div className={`p-4 rounded-lg border-2 ${task.status === 'approved'
+                  ? 'bg-emerald-50 border-emerald-200'
                   : 'bg-red-50 border-red-200'
-              }`}>
+                }`}>
                 <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
                   {task.status === 'approved' ? (
                     <>
@@ -285,7 +286,7 @@ const TaskDetailDialog = ({ task, isOpen, onClose, onUpdate, projectMembers, isA
               {actionType === 'approve' ? 'Görevi Onayla' : 'Görevi Reddet'}
             </DialogTitle>
             <DialogDescription>
-              {actionType === 'approve' 
+              {actionType === 'approve'
                 ? 'Görevi onaylamak için isteğe bağlı bir not ekleyebilirsiniz.'
                 : 'Lütfen red sebebini belirtin.'}
             </DialogDescription>
@@ -300,7 +301,7 @@ const TaskDetailDialog = ({ task, isOpen, onClose, onUpdate, projectMembers, isA
                 id="notes"
                 value={approvalNotes}
                 onChange={(e) => setApprovalNotes(e.target.value)}
-                placeholder={actionType === 'approve' 
+                placeholder={actionType === 'approve'
                   ? 'Harika iş! Teşekkürler.'
                   : 'Lütfen XYZ kısmını düzeltin...'}
                 rows={4}
@@ -322,7 +323,7 @@ const TaskDetailDialog = ({ task, isOpen, onClose, onUpdate, projectMembers, isA
               <Button
                 onClick={handleApprovalAction}
                 disabled={loading}
-                className={actionType === 'approve' 
+                className={actionType === 'approve'
                   ? 'bg-gradient-to-r from-emerald-600 to-emerald-700'
                   : ''}
                 variant={actionType === 'reject' ? 'destructive' : 'default'}

@@ -4,28 +4,66 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import api from '../api/axios';
 
 const EditProfile = () => {
     const navigate = useNavigate();
+    const { user, login } = useAuth(); // login function might be needed if token needs refresh, for now just user
     const [loading, setLoading] = useState(false);
 
-    // Mock initial data - in real app this would come from auth context
     const [formData, setFormData] = useState({
         username: '',
         email: '',
+        profilePicture: '',
         currentPassword: '',
         newPassword: '',
     });
 
+    useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                username: user.username || '',
+                email: user.email || '',
+                profilePicture: user.profilePicture || ''
+            }));
+        }
+    }, [user]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            const updateData = {
+                username: formData.username,
+                email: formData.email,
+                profilePicture: formData.profilePicture
+            };
+
+            if (formData.newPassword) {
+                updateData.password = formData.newPassword;
+            }
+
+            const response = await api.patch('/auth/update', updateData);
+
+            // If username/email changed, we might need to update local storage user or trigger re-fetch
+            // For now, let's assume a hard refresh or navigation will handle it, 
+            // but ideally we should update the context. 
+            // Since AuthContext fetches /me on load/mount, navigating away might be enough if we force reload or if context updates.
+            // Let's manually updaet local storage user if used, but AuthContext relies on token.
+            // A simple page reload on success is a crude but effective way to sync context if we don't expose a setUser method.
+
+            alert('Profil güncellendi!');
+            window.location.href = '/dashboard/profile';
+
+        } catch (error) {
+            console.error('Update required', error);
+            alert(error.response?.data?.message || 'Güncelleme başarısız');
+        } finally {
             setLoading(false);
-            navigate('/dashboard/profile');
-        }, 1000);
+        }
     };
 
     return (
@@ -46,6 +84,26 @@ const EditProfile = () => {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="flex items-center gap-4 mb-4">
+                            {formData.profilePicture && (
+                                <img
+                                    src={formData.profilePicture}
+                                    alt="Preview"
+                                    className="w-16 h-16 rounded-full object-cover border-2 border-border"
+                                />
+                            )}
+                            <div className="flex-1 grid gap-2">
+                                <Label htmlFor="profilePicture">Profil Fotoğrafı URL</Label>
+                                <Input
+                                    id="profilePicture"
+                                    value={formData.profilePicture}
+                                    onChange={(e) => setFormData({ ...formData, profilePicture: e.target.value })}
+                                    placeholder="https://example.com/avatar.jpg"
+                                />
+                                <p className="text-xs text-muted-foreground">Resim bağlantısı yapıştırın (.jpg, .png)</p>
+                            </div>
+                        </div>
+
                         <div className="grid gap-2">
                             <Label htmlFor="username">Kullanıcı Adı</Label>
                             <Input
@@ -70,12 +128,6 @@ const EditProfile = () => {
                         <div className="grid gap-2 pt-4 border-t">
                             <Label>Şifre Değiştir (İsteğe bağlı)</Label>
                             <div className="grid gap-2">
-                                <Input
-                                    type="password"
-                                    placeholder="Mevcut Şifre"
-                                    value={formData.currentPassword}
-                                    onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-                                />
                                 <Input
                                     type="password"
                                     placeholder="Yeni Şifre"

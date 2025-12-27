@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { ArrowLeft, Users, Plus, CheckCircle2, Clock, Circle, UserPlus, ListTodo, Edit2, Save, X, XCircle } from 'lucide-react';
 import api from '../api/axios';
 import TaskDetailDialog from '../components/TaskDetailDialog';
+import { useAuth } from '../contexts/AuthContext';
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -19,13 +20,13 @@ const ProjectDetail = () => {
   const [memberEmail, setMemberEmail] = useState('');
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
-  const [taskForm, setTaskForm] = useState({ title: '', description: '', assignedTo: '' });
-  
+  const [taskForm, setTaskForm] = useState({ title: '', description: '', assignedTo: '', priority: 'medium', dueDate: '' });
+
   // Edit mode states
   const [isEditMode, setIsEditMode] = useState(false);
   const [editForm, setEditForm] = useState({ name: '', description: '' });
   const [saving, setSaving] = useState(false);
-  
+
   // Task detail dialog
   const [selectedTask, setSelectedTask] = useState(null);
   const [taskDetailOpen, setTaskDetailOpen] = useState(false);
@@ -74,7 +75,7 @@ const ProjectDetail = () => {
         ...taskForm,
         projectId: id,
       });
-      setTaskForm({ title: '', description: '', assignedTo: '' });
+      setTaskForm({ title: '', description: '', assignedTo: '', priority: 'medium', dueDate: '' });
       setCreateTaskOpen(false);
       fetchTasks();
     } catch (error) {
@@ -130,15 +131,15 @@ const ProjectDetail = () => {
 
   const getStatusConfig = (status) => {
     switch (status) {
-      case 'approved': 
+      case 'approved':
         return { bg: 'bg-emerald-50/50', border: 'border-emerald-200', title: 'Onaylandı', color: 'text-emerald-700' };
-      case 'completed': 
+      case 'completed':
         return { bg: 'bg-blue-50/50', border: 'border-blue-200', title: 'Tamamlandı', color: 'text-blue-700' };
-      case 'in-progress': 
+      case 'in-progress':
         return { bg: 'bg-amber-50/50', border: 'border-amber-200', title: 'Devam Ediyor', color: 'text-amber-700' };
       case 'rejected':
         return { bg: 'bg-red-50/50', border: 'border-red-200', title: 'Reddedildi', color: 'text-red-700' };
-      default: 
+      default:
         return { bg: 'bg-neutral-50/50', border: 'border-neutral-200', title: 'Yapılacak', color: 'text-neutral-700' };
     }
   };
@@ -154,6 +155,8 @@ const ProjectDetail = () => {
     );
   }
 
+  const { user } = useAuth();
+
   if (!project) {
     return (
       <div className="text-center py-20">
@@ -162,7 +165,11 @@ const ProjectDetail = () => {
     );
   }
 
-  const isAdmin = project.members?.some(m => m.role === 'admin');
+  const currentUserId = user?._id || user?.id;
+  const isAdmin = project.members?.some(m => {
+    const memberId = m.user?._id || m.user;
+    return memberId && currentUserId && memberId.toString() === currentUserId.toString() && m.role === 'admin';
+  });
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -170,17 +177,17 @@ const ProjectDetail = () => {
       <div className="space-y-4">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div className="flex items-start gap-4 flex-1">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              asChild 
+            <Button
+              variant="outline"
+              size="icon"
+              asChild
               className="mt-1 border-2 hover:border-gray-500 hover:bg-gray-50"
             >
               <Link to="/dashboard/projects">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
             </Button>
-            
+
             <div className="flex-1">
               {!isEditMode ? (
                 <div>
@@ -213,7 +220,7 @@ const ProjectDetail = () => {
               )}
             </div>
           </div>
-          
+
           {isAdmin && (
             <div className="flex gap-2">
               {!isEditMode ? (
@@ -344,7 +351,7 @@ const ProjectDetail = () => {
                         <Input
                           id="title"
                           value={taskForm.title}
-                          onChange={(e) => setTaskForm({...taskForm, title: e.target.value})}
+                          onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
                           required
                         />
                       </div>
@@ -353,13 +360,13 @@ const ProjectDetail = () => {
                         <Textarea
                           id="description"
                           value={taskForm.description}
-                          onChange={(e) => setTaskForm({...taskForm, description: e.target.value})}
+                          onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
                           rows={3}
                         />
                       </div>
                       <div>
                         <Label htmlFor="assignedTo">Atanan Kişi</Label>
-                        <Select value={taskForm.assignedTo} onValueChange={(value) => setTaskForm({...taskForm, assignedTo: value})} required>
+                        <Select value={taskForm.assignedTo} onValueChange={(value) => setTaskForm({ ...taskForm, assignedTo: value })} required>
                           <SelectTrigger>
                             <SelectValue placeholder="Bir üye seçin" />
                           </SelectTrigger>
@@ -371,6 +378,33 @@ const ProjectDetail = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="priority">Öncelik</Label>
+                          <Select
+                            value={taskForm.priority}
+                            onValueChange={(value) => setTaskForm({ ...taskForm, priority: value })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="low">Düşük</SelectItem>
+                              <SelectItem value="medium">Orta</SelectItem>
+                              <SelectItem value="high">Yüksek</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="dueDate">Bitiş Tarihi</Label>
+                          <Input
+                            id="dueDate"
+                            type="date"
+                            value={taskForm.dueDate}
+                            onChange={(e) => setTaskForm({ ...taskForm, dueDate: e.target.value })}
+                          />
+                        </div>
                       </div>
                       <Button type="submit" className="w-full bg-gradient-to-r from-gray-900 to-gray-800">
                         Oluştur
@@ -386,7 +420,7 @@ const ProjectDetail = () => {
               {['todo', 'in-progress', 'completed'].map(status => {
                 const config = getStatusConfig(status);
                 const statusTasks = getTasksByStatus(status);
-                
+
                 return (
                   <div key={status} className="space-y-3">
                     <div className={`${config.bg} ${config.border} border-2 rounded-lg p-3`}>
@@ -399,11 +433,11 @@ const ProjectDetail = () => {
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2 min-h-[200px]">
                       {statusTasks.map(task => (
-                        <div 
-                          key={task._id} 
+                        <div
+                          key={task._id}
                           className="p-4 rounded-lg border-2 bg-white hover:border-gray-400 hover:shadow-md transition-all group cursor-pointer"
                           onClick={() => handleTaskClick(task)}
                         >

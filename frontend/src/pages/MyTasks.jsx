@@ -140,8 +140,8 @@ const MyTasks = () => {
                                     key={status}
                                     onClick={() => setFilterStatus(status)}
                                     className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${filterStatus === status
-                                            ? 'bg-background text-foreground shadow-sm'
-                                            : 'text-muted-foreground hover:text-foreground'
+                                        ? 'bg-background text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
                                         }`}
                                 >
                                     {status === 'all' ? 'Tümü' :
@@ -184,7 +184,7 @@ const MyTasks = () => {
                                     <div className="flex items-center gap-4">
                                         {getStatusBadge(task.status)}
                                         <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity" asChild>
-                                            <Link to={`/dashboard/projects/${task.projectId}`}>
+                                            <Link to={`/dashboard/projects/${task.project?._id}`}>
                                                 <ArrowUpRight className="h-4 w-4" />
                                             </Link>
                                         </Button>
