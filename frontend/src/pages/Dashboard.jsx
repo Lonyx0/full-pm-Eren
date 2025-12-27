@@ -20,13 +20,23 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await api.get('/projects/my-projects');
-      const projectsData = response.data;
+      const [projectsRes, tasksRes] = await Promise.all([
+        api.get('/projects/my-projects'),
+        api.get('/tasks/my-tasks')
+      ]);
+
+      const projectsData = projectsRes.data;
+      const tasksData = tasksRes.data;
+
       setProjects(projectsData);
+
+      const activeCount = tasksData.filter(t => t.status === 'todo' || t.status === 'in-progress').length;
+      const completedCount = tasksData.filter(t => t.status === 'completed' || t.status === 'approved').length;
+
       setStats({
         totalProjects: projectsData.length,
-        activeTasks: 0,
-        completedTasks: 0,
+        activeTasks: activeCount,
+        completedTasks: completedCount,
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);

@@ -163,7 +163,7 @@ const MyTasks = () => {
                                 <div className="flex items-center gap-4">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-xs font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded flex items-center gap-1">
+                                            <span className="text-xs font-medium text-indigo-700 bg-indigo-50/50 border border-indigo-100 px-2 py-0.5 rounded flex items-center gap-1">
                                                 <Briefcase className="h-3 w-3" />
                                                 {task.project?.name || 'Projesiz'}
                                             </span>
