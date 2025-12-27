@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/button';
-import { Avatar, AvatarFallback } from '../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Menu, Bell, LogOut, User, Settings } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
@@ -39,6 +39,7 @@ const Header = ({ onMenuClick }) => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:ring-2 hover:ring-gray-400 transition-all">
                 <Avatar className="h-10 w-10">
+                  {user?.profilePicture && <AvatarImage src={user.profilePicture} className="object-cover" />}
                   <AvatarFallback className="bg-gradient-to-br from-gray-900 to-gray-800 text-white font-semibold">
                     {user?.username?.charAt(0).toUpperCase() || 'U'}
                   </AvatarFallback>
@@ -55,7 +56,17 @@ const Header = ({ onMenuClick }) => {
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link to="/dashboard/profile" className="flex items-center">
-                  <User className="mr-2 h-4 w-4" />
+                  {user?.profilePicture ? (
+                    <img
+                      src={user.profilePicture}
+                      alt={user.username}
+                      className="mr-2 h-6 w-6 rounded-full object-cover border-2 border-border"
+                    />
+                  ) : (
+                    <Button variant="ghost" size="icon" className="mr-2 h-6 w-6 rounded-full bg-secondary/50">
+                      <User className="h-4 w-4 text-gray-700" />
+                    </Button>
+                  )}
                   Profil
                 </Link>
               </DropdownMenuItem>
