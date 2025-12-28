@@ -10,6 +10,11 @@ const app = express();
 // Connect to database
 connectDB();
 
+// Health Check Endpoint
+app.get('/', (req, res) => {
+    res.send('API is running...');
+});
+
 // CORS configuration
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -24,7 +29,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'your-session-secret',
     resave: false,
     saveUninitialized: false,
-    cookie: { 
+    cookie: {
         secure: process.env.NODE_ENV === 'production',
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
