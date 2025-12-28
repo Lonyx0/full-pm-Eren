@@ -12,11 +12,11 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const from = location.state?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e) => {
@@ -25,13 +25,13 @@ const Login = () => {
     setLoading(true);
 
     const result = await login(emailOrUsername, password);
-    
+
     if (result.success) {
       navigate(from, { replace: true });
     } else {
       setError(result.message);
     }
-    
+
     setLoading(false);
   };
 
@@ -63,7 +63,7 @@ const Login = () => {
                   {error}
                 </div>
               )}
-              
+
               <div className="space-y-2">
                 <Label htmlFor="emailOrUsername" className="text-sm font-semibold">
                   Email veya Kullanıcı Adı
@@ -82,7 +82,7 @@ const Login = () => {
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-semibold">
                   Şifre
@@ -102,9 +102,9 @@ const Login = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full h-12 bg-gradient-to-r from-gray-900 to-gray-800 hover:shadow-lg transition-all text-base font-semibold" 
+              <Button
+                type="submit"
+                className="w-full h-12 bg-gradient-to-r from-gray-900 to-gray-800 hover:shadow-lg transition-all text-base font-semibold"
                 disabled={loading}
               >
                 {loading ? (
@@ -132,7 +132,7 @@ const Login = () => {
             <Button
               type="button"
               variant="outline"
-              className="w-full h-12 border-2 hover:bg-neutral-50 transition-all"
+              className="w-full h-12 border-2 hover:bg-neutral-50 hover:text-gray-900 transition-all"
               onClick={handleGoogleLogin}
               disabled={loading}
             >
@@ -173,7 +173,7 @@ const Login = () => {
       <div className="hidden lg:flex flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-12 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-float"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
-        
+
         <div className="relative z-10 flex flex-col justify-center text-white animate-slide-up">
           <div className="mb-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 mb-6">
