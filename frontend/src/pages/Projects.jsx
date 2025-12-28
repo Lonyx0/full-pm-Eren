@@ -53,8 +53,8 @@ const Projects = () => {
           </h1>
           <p className="text-neutral-600 text-lg">Tüm projelerinizi görüntüleyin ve yönetin</p>
         </div>
-        <Button 
-          asChild 
+        <Button
+          asChild
           className="bg-gradient-to-r from-gray-900 to-gray-800 hover:shadow-lg transition-all h-12 px-6"
         >
           <Link to="/dashboard/projects/new">
@@ -74,8 +74,8 @@ const Projects = () => {
             <p className="text-neutral-600 text-lg mb-8 max-w-md mx-auto">
               İlk projenizi oluşturun ve ekibinizle birlikte çalışmaya başlayın
             </p>
-            <Button 
-              asChild 
+            <Button
+              asChild
               className="bg-gradient-to-r from-gray-900 to-gray-800 hover:shadow-lg transition-all h-12 px-8"
             >
               <Link to="/dashboard/projects/new">
@@ -91,7 +91,7 @@ const Projects = () => {
             const colorScheme = projectColors[index % projectColors.length];
             return (
               <Link key={project._id} to={`/dashboard/projects/${project._id}`}>
-                <Card 
+                <Card
                   className="group h-full border-2 hover:border-gray-500 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-slide-up overflow-hidden"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
@@ -102,7 +102,7 @@ const Projects = () => {
                       <FolderKanban className="h-8 w-8 text-white" />
                     </div>
                     <div className="relative z-10 flex items-center gap-2 px-3 py-1.5 bg-white/25 backdrop-blur-sm rounded-full border border-white/30">
-                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                       <span className="text-white text-xs font-semibold">Aktif</span>
                     </div>
                   </div>
@@ -125,8 +125,8 @@ const Projects = () => {
                         <span className="font-bold text-gray-900">65%</span>
                       </div>
                       <div className="h-2.5 bg-neutral-100 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full bg-gradient-to-r ${colorScheme.gradient} rounded-full transition-all duration-500`} 
+                        <div
+                          className={`h-full bg-gradient-to-r ${colorScheme.gradient} rounded-full transition-all duration-500`}
                           style={{ width: '65%' }}
                         />
                       </div>
@@ -192,7 +192,7 @@ const Projects = () => {
               <p className="text-sm text-neutral-600">Toplam Proje</p>
             </CardContent>
           </Card>
-          
+
           <Card className="border-2 shadow-soft hover:shadow-elegant transition-all">
             <CardContent className="p-6 text-center">
               <div className="inline-flex p-3 bg-purple-100 rounded-xl mb-3">
@@ -204,7 +204,7 @@ const Projects = () => {
               <p className="text-sm text-neutral-600">Toplam Üye</p>
             </CardContent>
           </Card>
-          
+
           <Card className="border-2 shadow-soft hover:shadow-elegant transition-all">
             <CardContent className="p-6 text-center">
               <div className="inline-flex p-3 bg-emerald-100 rounded-xl mb-3">
